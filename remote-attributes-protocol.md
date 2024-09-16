@@ -6,7 +6,7 @@ Add an API that allows decorating CAS entries with arbitrary attributes and a co
 
 ## Introduction
 
-As of 2024-09-10, Bazel lacks a unified approach to releasing artifacts. Alas, the community found various and insiduous escape hatches, like creaing publishing scripts that can be run through `bazel run`. 
+As of 2024-09-10, Bazel lacks a unified approach to releasing artifacts. Alas, the community found various and insiduous escape hatches, like creating publishing scripts that can be run through `bazel run`. 
 
 Though this may seem enough on a first look, it does suffer from multiple issues. Firstly, such an approach makes it impossible to publish multiple artifacts at the same time without adding one more level of script nesting to coordinate multiple run targets.
 
@@ -14,3 +14,32 @@ Furthermore, pushing to an external artifactory may be rather unnecessary when R
 
 ## Proposal
 
+Remote Attributes Protocol would allow 2 simple operations, one to add attributes to a CAS entity and the other to retrieve a list of CAS entities with their attributes, given a subset of said attributes.
+
+```protobuf
+message CasAttribute {
+  string name = 1;
+  string value = 2;
+}
+
+message SetAttributesRequest {
+  Digest digest = 1;
+  repeated CasAttribute attributes = 2;
+}
+
+message SetAttributesResponse {}
+
+message SearchAttributesAndBlobsRequest {
+  repeated CasAttribute attributes = 1;
+}
+
+message SearchAttributesAndBlobsResponse {
+  Digest digest = 1;
+  repeated CasAttribute attributes = 2;
+}
+
+service RemoteAttributes {
+  rpc SetAttributes(SetAttributesRequest) returns (SetAttributesResponse);
+  rpc SearchAttributesAndBlobs(SearchAttributesAndBlobsRequest) returns (stream SearchAttributesAndBlobsResponse);
+}
+```
