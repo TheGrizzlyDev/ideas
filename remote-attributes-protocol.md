@@ -43,3 +43,19 @@ service RemoteAttributes {
   rpc SearchAttributesAndBlobs(SearchAttributesAndBlobsRequest) returns (stream SearchAttributesAndBlobsResponse);
 }
 ```
+
+this would allow a client to annotate CAS objects with:
+- attributes that can help identify blobs relating to a specific release of the user's software
+- attributes with well-known meaning that can affect how a blob is stored (eg: we can imaging an attribute like `"min-ttl": "30d"` that sets the minimum time-to-live of a blob to 30 days)
+- attributes specific to a RBE implementation with unique behaviours
+
+On the client side one could imagine the 2 following interfaces (examples based on Bazel, even though the API is not restricted to Bazel):
+- Searching and fetching blobs via attributes
+```python
+def _my_module_impl(mctx):
+  for (digest, attributes) in mctx.search_attributes_and_blobs({"release": "0.0.1", "os": "Linux/Debian"}):
+    if "distro" in attributes and attributes["distro"] == "Debian":
+      mctx.download_from_cas(digest, output="release.deb")
+```
+
+
