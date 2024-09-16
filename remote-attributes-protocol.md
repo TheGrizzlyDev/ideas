@@ -57,5 +57,19 @@ def _my_module_impl(mctx):
     if "distro" in attributes and attributes["distro"] == "Debian":
       mctx.download_from_cas(digest, output="release.deb")
 ```
-
-
+- Adding attributes to a blob via rules (which can be pushed by running a dedicated command like `bazel release/publish`)
+```python
+def _my_rule_impl(ctx):
+  # ... do something ...
+  return [
+    # ... DefaultInfo(...) ...
+    AttributesInfo(
+      blobs = {
+        "some_output.txt": {
+          "distro": ctx.attr.distro,
+        },
+      },
+    ),
+  ]
+```
+- Adding attributes manually by invoking the command line: `bazel release/publish --blobs-regex=*.txt --attributes=distro:Debian,os:Linux`
