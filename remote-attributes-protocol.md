@@ -72,4 +72,6 @@ def _my_rule_impl(ctx):
     ),
   ]
 ```
-- Adding attributes manually by invoking the command line: `bazel release/publish --blobs-regex=*.txt --attributes=distro:Debian,os:Linux`
+- Adding attributes manually by invoking the command line: `bazel release/publish --blobs-regex=*.txt --attributes=distro:Debian,os:Linux //some:target`
+
+
